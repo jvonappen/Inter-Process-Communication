@@ -1,6 +1,7 @@
 #include "EntityEditorApp.h"
 #include <random>
 #include <time.h>
+#include <windows.h>
 
 #define RAYGUI_IMPLEMENTATION
 #define RAYGUI_SUPPORT_ICONS
@@ -36,13 +37,13 @@ bool EntityEditorApp::Startup() {
 }
 
 void EntityEditorApp::Shutdown() {
-
+	CloseHandle(fileHandle);
+	CloseHandle(sizeHandle);
 	CloseWindow();        // Close window and OpenGL context
 }
 
 void EntityEditorApp::Update(float deltaTime) {
 	
-
 	// select an entity to edit
 	static int selection = 0;
 	static bool selectionEditMode = false;
@@ -101,7 +102,23 @@ void EntityEditorApp::Update(float deltaTime) {
 		if (m_entities[i].y < 0)
 			m_entities[i].y += m_screenHeight;
 	}
+	// for int i = 0 while less than ENTITY_COUNT
+	// entity[i] = m_entities[i];
+
+	Entity* entity = (Entity*)MapViewOfFile(fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(Entity));
+	for (int i = 0; i < ENTITY_COUNT; i++)
+	{
+		entity[i] = m_entities[i];
+	}
+
+	int* size = (int*)MapViewOfFile(sizeHandle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
+	*size = ENTITY_COUNT;
+	
+	UnmapViewOfFile(entity);
+	UnmapViewOfFile(size);
+
 }
+
 
 void EntityEditorApp::Draw() {
 	BeginDrawing();
@@ -122,3 +139,5 @@ void EntityEditorApp::Draw() {
 
 	EndDrawing();
 }
+
+

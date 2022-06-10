@@ -2,6 +2,7 @@
 #include <vector>
 #include "raylib.h"
 #include "WinInc.h"
+#include <windows.h>
 
 struct Entity {
 	float x = 0, y = 0;
@@ -21,6 +22,9 @@ public:
 
 	void Update(float deltaTime);
 	void Draw();
+
+	HANDLE fileHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"MySharedMemory");
+	HANDLE sizeHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"MySized");
 
 protected:
 	int m_screenWidth;
